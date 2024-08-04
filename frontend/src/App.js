@@ -10,7 +10,7 @@ function App() {
     const fetchRequests = async () => {
       try {
         const response = await axios.get("http://localhost:3000/requests");
-        setRequests(response.data);
+        setRequests(response.data.data); // Certifique-se de acessar o array correto
       } catch (error) {
         console.error("Error fetching requests:", error);
       }
