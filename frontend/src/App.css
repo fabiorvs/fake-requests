@@ -1,0 +1,71 @@
+.App {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.request-list, .request-details {
+  width: 40%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.request-list {
+  overflow-y: auto;
+  max-height: 500px;
+  /* Define a altura máxima para cerca de 20 linhas */
+}
+
+.request-list ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.request-list li {
+  cursor: pointer;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.2s;
+}
+
+.request-list li:hover {
+  background-color: #f0f0f0;
+}
+
+.request-list li.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+button {
+  margin-bottom: 10px;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+pre {
+  text-align: left;
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
