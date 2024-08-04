@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { v4: uuidv4 } = require("uuid"); // Importar a função para gerar UUIDs
+const { v4: uuidv4 } = require("uuid");
 const app = express();
 
 app.use(cors());
@@ -14,7 +14,7 @@ let requests = [];
 app.post("*", (req, res) => {
   const { method, headers, body, query, path } = req;
   const requestData = {
-    id: uuidv4(), // Adicionar um ID único
+    id: uuidv4(),
     method,
     path,
     headers,
@@ -23,18 +23,29 @@ app.post("*", (req, res) => {
     timestamp: new Date(),
   };
   requests.push(requestData);
-  res.status(200).send("Request received");
+  res.status(200).json({
+    status: "success",
+    message: "Request received",
+    data: requestData,
+  });
 });
 
 // Endpoint para visualizar requisições armazenadas
 app.get("/requests", (req, res) => {
-  res.json(requests);
+  res.status(200).json({
+    status: "success",
+    message: "Requests retrieved successfully",
+    data: requests,
+  });
 });
 
 // Limpar requisições
 app.delete("/requests", (req, res) => {
   requests = [];
-  res.send("Requests cleared");
+  res.status(200).json({
+    status: "success",
+    message: "Requests cleared",
+  });
 });
 
 // Iniciar o servidor
