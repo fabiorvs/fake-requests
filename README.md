@@ -28,7 +28,15 @@ E para verificar o npm:
 npm -v
 ```
 
-### Backend
+# Backend Mock API
+
+Este projeto é uma pequena aplicação Node.js com **Express** para simular requisições de uma API.
+Ele captura requisições recebidas e permite inspecionar os dados enviados.
+Além disso, pode simular um **endpoint de login** que retorna um JWT de teste, configurável via `.env`.
+
+---
+
+## ⚙️ Instalação
 
 1. Navegue até a pasta `backend`:
 
@@ -45,10 +53,83 @@ npm -v
 3. Inicie o servidor:
 
    ```bash
-   node server.js
+   node index.js
    ```
 
    O servidor será iniciado na porta `3000` por padrão.
+
+---
+
+## 🔑 Simulação de Token (opcional)
+
+Você pode configurar um endpoint de **login fake** que retorna um JWT de teste.  
+Basta criar um arquivo `.env` na pasta `backend` com as variáveis abaixo:
+
+```env
+# Habilitar/Desabilitar a simulação de token
+TOKEN_ENABLE=true
+
+# Rota e método para obter o token
+TOKEN_ROUTE=/login
+TOKEN_METHOD=POST
+
+# Nome do campo no JSON de resposta
+TOKEN_FIELD=access_token
+
+# Configurações do JWT
+JWT_SECRET=troque-isto-em-producao
+JWT_ALG=HS256
+JWT_TTL=3600
+
+# Extras opcionais
+TOKEN_TYPE=Bearer
+INCLUDE_EXPIRES_IN=true
+INCLUDE_REFRESH_TOKEN=false
+```
+
+### 📌 Exemplo de resposta do `/login`
+
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
+  "token_type": "Bearer",
+  "expires_in": 3600
+}
+```
+
+Se quiser mudar o nome do campo (ex.: `token`), basta alterar no `.env`:
+
+```env
+TOKEN_FIELD=token
+```
+
+---
+
+## 📋 Variáveis de Ambiente
+
+| Variável                | Descrição                                    | Padrão     |
+|--------------------------|----------------------------------------------|------------|
+| `PORT`                   | Porta do servidor                            | `3000`     |
+| `TOKEN_ENABLE`           | Ativa/desativa a simulação de login          | `true`     |
+| `TOKEN_ROUTE`            | Rota do endpoint de login fake               | `/login`   |
+| `TOKEN_METHOD`           | Método HTTP do login (POST, GET, etc)        | `POST`     |
+| `TOKEN_FIELD`            | Nome do campo de retorno do token            | `access_token` |
+| `JWT_SECRET`             | Segredo usado para assinar o JWT             | `dev-secret-change-me` |
+| `JWT_ALG`                | Algoritmo do JWT                             | `HS256`    |
+| `JWT_TTL`                | Tempo de expiração do token (segundos)       | `3600`     |
+| `TOKEN_TYPE`             | Tipo do token retornado (ex.: `Bearer`)      | `Bearer`   |
+| `INCLUDE_EXPIRES_IN`     | Inclui `expires_in` na resposta (`true/false`)| `true`     |
+| `INCLUDE_REFRESH_TOKEN`  | Inclui `refresh_token` na resposta (`true/false`)| `false` |
+
+---
+
+## 📚 Endpoints disponíveis
+
+- `POST *` → Captura qualquer requisição enviada e armazena.
+- `GET /requests` → Lista todas as requisições armazenadas.
+- `DELETE /requests` → Limpa as requisições armazenadas.
+- `GET /health` → Verifica se o servidor está ativo.
+- `[TOKEN_METHOD] /login` (configurável via `.env`) → Retorna um JWT fake.
 
 ### Frontend
 
