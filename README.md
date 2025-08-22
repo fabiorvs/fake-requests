@@ -31,39 +31,27 @@ npm -v
 # Backend Mock API
 
 Este projeto é uma pequena aplicação Node.js com **Express** para simular requisições de uma API.
-Ele captura requisições recebidas e permite inspecionar os dados enviados.
-Além disso, pode simular um **endpoint de login** que retorna um JWT de teste, configurável via `.env`.
+- Captura requisições recebidas (útil para debugging).
+- Pode simular um **endpoint de login** que retorna um JWT de teste, configurável via `.env`.
+- **Novo:** permite configurar **múltiplas rotas mock** via `.env`, devolvendo o conteúdo de arquivos JSON na pasta `mocks/`.
 
 ---
 
 ## ⚙️ Instalação
 
-1. Navegue até a pasta `backend`:
+```bash
+cd backend
+npm install
+node index.js
+```
 
-   ```bash
-   cd backend
-   ```
-
-2. Instale as dependências:
-
-   ```bash
-   npm install
-   ```
-
-3. Inicie o servidor:
-
-   ```bash
-   node index.js
-   ```
-
-   O servidor será iniciado na porta `3000` por padrão.
+O servidor inicia por padrão na porta `3000`.
 
 ---
 
 ## 🔑 Simulação de Token (opcional)
 
-Você pode configurar um endpoint de **login fake** que retorna um JWT de teste.  
-Basta criar um arquivo `.env` na pasta `backend` com as variáveis abaixo:
+Crie um `.env` com:
 
 ```env
 # Habilitar/Desabilitar a simulação de token
@@ -87,8 +75,7 @@ INCLUDE_EXPIRES_IN=true
 INCLUDE_REFRESH_TOKEN=false
 ```
 
-### 📌 Exemplo de resposta do `/login`
-
+**Exemplo de resposta do `/login`:**
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
@@ -97,39 +84,108 @@ INCLUDE_REFRESH_TOKEN=false
 }
 ```
 
-Se quiser mudar o nome do campo (ex.: `token`), basta alterar no `.env`:
+---
 
+## 🧩 Rotas Mock Dinâmicas (multi-URL)
+
+Você pode configurar **quantas rotas quiser** via `.env`, apontando para arquivos JSON na pasta `mocks/`.  
+Use as chaves numeradas `MOCK_{N}_*`.
+
+### Variáveis globais
 ```env
-TOKEN_FIELD=token
+# Quantos mocks ativos (1..N)
+MOCK_COUNT=2
+
+# Pasta onde ficam os JSONs de resposta (relativa ao projeto)
+MOCK_RESP_DIR=./mocks
+```
+
+### Para cada mock (exemplo com 2 rotas)
+```env
+# MOCK 1
+MOCK_1_ROUTE=/users
+MOCK_1_METHOD=GET
+MOCK_1_FILE=users.json
+MOCK_1_STATUS=200
+MOCK_1_HEADERS={"x-mock":"users"}
+MOCK_1_DELAY_MS=0
+MOCK_1_CONTENT_TYPE=application/json
+
+# MOCK 2
+MOCK_2_ROUTE=/orders
+MOCK_2_METHOD=POST
+MOCK_2_FILE=create-order.json
+MOCK_2_STATUS=201
+MOCK_2_HEADERS={}
+MOCK_2_DELAY_MS=300
+MOCK_2_CONTENT_TYPE=application/json
+```
+
+> **Observações**
+> - `MOCK_{N}_FILE` deve existir dentro de `MOCK_RESP_DIR`.
+> - `MOCK_{N}_HEADERS` é um JSON válido de cabeçalhos extras (opcional).
+> - `MOCK_{N}_DELAY_MS` adiciona atraso artificial (opcional).
+> - `MOCK_{N}_CONTENT_TYPE` permite retornar outros formatos (ex.: `text/plain`).
+
+### Pasta `mocks/` (exemplos)
+- `mocks/users.json`
+- `mocks/create-order.json`
+
+Conteúdo de exemplo:
+
+`mocks/users.json`
+```json
+[
+  { "id": 1, "name": "Ada Lovelace" },
+  { "id": 2, "name": "Grace Hopper" }
+]
+```
+
+`mocks/create-order.json`
+```json
+{
+  "orderId": "ord_123",
+  "status": "created"
+}
 ```
 
 ---
 
-## 📋 Variáveis de Ambiente
+## 📋 Variáveis de Ambiente (tabela)
 
-| Variável                | Descrição                                    | Padrão     |
-|--------------------------|----------------------------------------------|------------|
-| `PORT`                   | Porta do servidor                            | `3000`     |
-| `TOKEN_ENABLE`           | Ativa/desativa a simulação de login          | `true`     |
-| `TOKEN_ROUTE`            | Rota do endpoint de login fake               | `/login`   |
-| `TOKEN_METHOD`           | Método HTTP do login (POST, GET, etc)        | `POST`     |
-| `TOKEN_FIELD`            | Nome do campo de retorno do token            | `access_token` |
-| `JWT_SECRET`             | Segredo usado para assinar o JWT             | `dev-secret-change-me` |
-| `JWT_ALG`                | Algoritmo do JWT                             | `HS256`    |
-| `JWT_TTL`                | Tempo de expiração do token (segundos)       | `3600`     |
-| `TOKEN_TYPE`             | Tipo do token retornado (ex.: `Bearer`)      | `Bearer`   |
-| `INCLUDE_EXPIRES_IN`     | Inclui `expires_in` na resposta (`true/false`)| `true`     |
-| `INCLUDE_REFRESH_TOKEN`  | Inclui `refresh_token` na resposta (`true/false`)| `false` |
+| Variável                  | Descrição                                              | Padrão                     |
+|--------------------------|--------------------------------------------------------|----------------------------|
+| `PORT`                   | Porta do servidor                                      | `3000`                     |
+| `TOKEN_ENABLE`           | Ativa/desativa a simulação de login                    | `true`                     |
+| `TOKEN_ROUTE`            | Rota do endpoint de login fake                         | `/login`                   |
+| `TOKEN_METHOD`           | Método HTTP do login (POST, GET, etc)                  | `POST`                     |
+| `TOKEN_FIELD`            | Nome do campo de retorno do token                      | `access_token`             |
+| `JWT_SECRET`             | Segredo usado para assinar o JWT                       | `dev-secret-change-me`     |
+| `JWT_ALG`                | Algoritmo do JWT                                       | `HS256`                    |
+| `JWT_TTL`                | Tempo de expiração do token (segundos)                 | `3600`                     |
+| `TOKEN_TYPE`             | Tipo do token retornado (ex.: `Bearer`)                | `Bearer`                   |
+| `INCLUDE_EXPIRES_IN`     | Inclui `expires_in` na resposta (`true/false`)         | `true`                     |
+| `INCLUDE_REFRESH_TOKEN`  | Inclui `refresh_token` na resposta (`true/false`)      | `false`                    |
+| `MOCK_COUNT`             | Quantidade de mocks dinâmicos                           | `0`                        |
+| `MOCK_RESP_DIR`          | Pasta base para arquivos de resposta                   | `./mocks`                  |
+| `MOCK_{N}_ROUTE`         | Rota do mock (ex.: `/users`)                           | —                          |
+| `MOCK_{N}_METHOD`        | Método HTTP (`GET`, `POST`, ...)                       | `GET`                      |
+| `MOCK_{N}_FILE`          | Arquivo de resposta dentro de `MOCK_RESP_DIR`          | —                          |
+| `MOCK_{N}_STATUS`        | Status HTTP de resposta                                | `200`                      |
+| `MOCK_{N}_HEADERS`       | JSON de cabeçalhos extras (ex.: `{"x-a":"1"}`)         | `{}`                       |
+| `MOCK_{N}_DELAY_MS`      | Atraso artificial em ms                                | `0`                        |
+| `MOCK_{N}_CONTENT_TYPE`  | Content-Type da resposta                               | `application/json`         |
 
 ---
 
-## 📚 Endpoints disponíveis
+## 📚 Endpoints padrão
 
-- `POST *` → Captura qualquer requisição enviada e armazena.
-- `GET /requests` → Lista todas as requisições armazenadas.
-- `DELETE /requests` → Limpa as requisições armazenadas.
-- `GET /health` → Verifica se o servidor está ativo.
-- `[TOKEN_METHOD] /login` (configurável via `.env`) → Retorna um JWT fake.
+- `POST *` → Captura qualquer requisição **POST** enviada (fallback).
+- `GET /requests` → Lista requisições armazenadas.
+- `DELETE /requests` → Limpa as requisições.
+- `GET /health` → Healthcheck.
+- `[TOKEN_METHOD] /login` → JWT fake (se `TOKEN_ENABLE=true`).
+- **+ Rotas mock dinâmicas** conforme seu `.env`.
 
 ### Frontend
 
