@@ -31,6 +31,7 @@ npm -v
 # Backend Mock API
 
 Este projeto é uma pequena aplicação Node.js com **Express** para simular requisições de uma API.
+
 - Captura requisições recebidas (útil para debugging).
 - Pode simular um **endpoint de login** que retorna um JWT de teste, configurável via `.env`.
 - **Novo:** permite configurar **múltiplas rotas mock** via `.env`, devolvendo o conteúdo de arquivos JSON na pasta `mocks/`.
@@ -76,6 +77,7 @@ INCLUDE_REFRESH_TOKEN=false
 ```
 
 **Exemplo de resposta do `/login`:**
+
 ```json
 {
   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6...",
@@ -92,6 +94,7 @@ Você pode configurar **quantas rotas quiser** via `.env`, apontando para arquiv
 Use as chaves numeradas `MOCK_{N}_*`.
 
 ### Variáveis globais
+
 ```env
 # Quantos mocks ativos (1..N)
 MOCK_COUNT=2
@@ -101,6 +104,7 @@ MOCK_RESP_DIR=./mocks
 ```
 
 ### Para cada mock (exemplo com 2 rotas)
+
 ```env
 # MOCK 1
 MOCK_1_ROUTE=/users
@@ -122,18 +126,21 @@ MOCK_2_CONTENT_TYPE=application/json
 ```
 
 > **Observações**
+>
 > - `MOCK_{N}_FILE` deve existir dentro de `MOCK_RESP_DIR`.
 > - `MOCK_{N}_HEADERS` é um JSON válido de cabeçalhos extras (opcional).
 > - `MOCK_{N}_DELAY_MS` adiciona atraso artificial (opcional).
 > - `MOCK_{N}_CONTENT_TYPE` permite retornar outros formatos (ex.: `text/plain`).
 
 ### Pasta `mocks/` (exemplos)
+
 - `mocks/users.json`
 - `mocks/create-order.json`
 
 Conteúdo de exemplo:
 
 `mocks/users.json`
+
 ```json
 [
   { "id": 1, "name": "Ada Lovelace" },
@@ -142,6 +149,7 @@ Conteúdo de exemplo:
 ```
 
 `mocks/create-order.json`
+
 ```json
 {
   "orderId": "ord_123",
@@ -201,13 +209,36 @@ Conteúdo de exemplo:
    npm install
    ```
 
-3. Inicie o servidor de desenvolvimento:
+3. Configure a URL da API (opcional).  
+   Por padrão, o frontend acessa `http://localhost:3000`.  
+   Se o backend estiver em outra porta/host, crie um arquivo `.env` na raiz do projeto:
 
-   ```bash
-   npm start
+   #### Se estiver usando **Create React App (CRA)**
+
+   ```env
+   REACT_APP_API_BASE_URL=http://localhost:3000
    ```
 
-   O servidor de desenvolvimento React será iniciado em `http://localhost:3000`.
+   #### Se estiver usando **Vite**
+
+   ```env
+   VITE_API_BASE_URL=http://localhost:3000
+   ```
+
+   > ⚠️ Após alterar/criar o `.env`, reinicie o servidor de desenvolvimento.
+
+4. Inicie o servidor de desenvolvimento:
+
+   ```bash
+   # CRA
+   npm start
+
+   # ou, se estiver usando Vite
+   npm run dev
+   ```
+
+   O servidor React será iniciado normalmente em `http://localhost:3000` (CRA)  
+   ou em `http://localhost:5173` (Vite).
 
 ## Funcionalidades
 
